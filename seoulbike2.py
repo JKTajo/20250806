@@ -11,16 +11,7 @@ with open("/root/.kaggle/kaggle.json", "w") as f:
 
 os.chmod("/root/.kaggle/kaggle.json", 600)
 
-# ----------------------------------------
-# 2. 필요한 라이브러리 설치
-# ----------------------------------------
 
-
-# ----------------------------------------
-# 3. Kaggle에서 데이터 다운로드
-# ----------------------------------------
-!kaggle datasets download -d saurabhshahane/seoul-bike-sharing-demand-prediction -p ./data
-!unzip -o ./data/seoul-bike-sharing-demand-prediction.zip -d ./data
 
 # ----------------------------------------
 # 4. Streamlit 앱 코드 작성
