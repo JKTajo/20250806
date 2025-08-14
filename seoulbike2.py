@@ -31,6 +31,10 @@ with tab2:
 # 3️⃣ 그래프 분석
 with tab3:
     st.header("📊 대여량 히스토그램")
+
+    # 컬럼명 확인 후 공백 제거
+    df.columns = df.columns.str.strip()
+
     index = st.number_input(
         "그래프에 표시할 인덱스",
         min_value=0,
@@ -39,8 +43,19 @@ with tab3:
         step=1,
         key="graph_index"
     )
-    fig, ax = plt.subplots()
-    sns.histplot(df["Rented Bike Count"], bins=30, kde=True, ax=ax)
-    ax.axvline(df.loc[index, "Rented Bike Count"], color="red", linestyle="--", label=f"Index {index}")
-    ax.legend()
-    st.pyplot(fig)
+
+    # 안전하게 컬럼 불러오기
+    if "Rented Bike Count" in df.columns:
+        fig, ax = plt.subplots()
+        sns.histplot(df["Rented Bike Count"], bins=30, kde=True, ax=ax)
+        ax.axvline(
+            df.loc[index, "Rented Bike Count"],
+            color="red",
+            linestyle="--",
+            label=f"Index {index}"
+        )
+        ax.legend()
+        st.pyplot(fig)
+    else:
+        st.error("❌ 'Rented Bike Count' 컬럼을 찾을 수 없습니다. CSV 컬럼명을 확인하세요.")
+
