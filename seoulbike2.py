@@ -25,70 +25,42 @@ os.chmod("/root/.kaggle/kaggle.json", 600)
 # ----------------------------------------
 # 4. Streamlit 앱 코드 작성
 # ----------------------------------------
-app_code = '''
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# 데이터 불러오기
+# 데이터 로드
 @st.cache_data
 def load_data():
-    df = pd.read_csv("./data/SeoulBikeData.csv", encoding="ISO-8859-1")
-    return df
+    return pd.read_csv("SeoulBikeData.csv", encoding="ISO-8859-1")
 
 df = load_data()
 
-# 사이드바 제목
-st.sidebar.title("🚲 서울 자전거 수요 분석")
+# 사이드바
+st.sidebar.title("🚲 서울 자전거 데이터 분석")
+st.sidebar.markdown("Kaggle 데이터 기반 웹앱")
 
-# 탭 구성
-tab1, tab2, tab3 = st.tabs(["📄 원본 데이터", "🔍 인덱스 검색", "📊 인덱스 기반 그래프"])
+# 탭
+tab1, tab2, tab3 = st.tabs(["📌 전체 데이터", "🔍 인덱스 조회", "📊 그래프 분석"])
 
-# 📄 첫 번째 탭 - 원본 데이터
+# 1️⃣ 전체 데이터
 with tab1:
-    st.header("📄 원본 데이터")
+    st.header("📌 전체 데이터")
     st.dataframe(df)
 
-# 🔍 두 번째 탭 - 인덱스 검색
+# 2️⃣ 인덱스 조회
 with tab2:
-    st.header("🔍 인덱스 검색")
-    index_input = st.number_input("확인할 인덱스 번호 입력", min_value=0, max_value=len(df)-1, value=0, step=1)
-    st.dataframe(df.iloc[[int(index_input)]])
+    st.header("🔍 인덱스 조회")
+    index = st.number_input("인덱스 선택", min_value=0, max_value=len(df)-1, value=0, step=1)
+    st.write(df.iloc[[index]])
 
-# 📊 세 번째 탭 - 인덱스 기반 그래프
+# 3️⃣ 그래프 분석
 with tab3:
-    st.header("📊 인덱스 기반 그래프")
-    index_input_graph = st.number_input("그래프를 그릴 인덱스 번호 입력", min_value=0, max_value=len(df)-1, value=0, step=1)
-    row_data = df.iloc[int(index_input_graph)]
-
-    # 예시: 대여량, 온도, 습도, 풍속 시각화
-    features = ["Rented Bike Count", "Temperature(°C)", "Humidity(%)", "Wind speed (m/s)"]
-    available_features = [f for f in features if f in df.columns]
-
-    if available_features:
-        fig, ax = plt.subplots()
-        sns.barplot(x=available_features, y=row_data[available_features], ax=ax)
-        plt.xticks(rotation=45)
-        st.pyplot(fig)
-    else:
-        st.warning("그래프를 그릴 수 있는 수치형 컬럼이 없습니다.")
-'''
-
-with open("app.py", "w") as f:
-    f.write(app_code)
-
-# ----------------------------------------
-# 5. requirements.txt 작성
-# ----------------------------------------
-reqs = '''
-streamlit
-pandas
-matplotlib
-seaborn
-kaggle
-'''
-with open("requirements.txt", "w") as f:
-    f.write(reqs)
-
-print("✅ app.py와 requirements.txt 생성 완료")
+    st.header("📊 대여량 히스토그램")
+    index = st.number_input("그래프에 표시할 인덱스", min_value=0, max_value=len(df)-1, value=0, step=1, key="graph_index")
+    fig, ax = plt.subplots()
+    sns.histplot(df["Rented Bike Count"], bins=30, kde=True, ax=ax)
+    ax.axvline(df.loc[index, "Rented Bike Count"], color="red", linestyle="--", label=f"Index {index}")
+    ax.legend()
+    st.pyplot(fig)
