@@ -14,7 +14,7 @@ os.chmod("/root/.kaggle/kaggle.json", 600)
 # ----------------------------------------
 # 2. 필요한 라이브러리 설치
 # ----------------------------------------
-!pip install pandas matplotlib seaborn streamlit kaggle
+
 
 # ----------------------------------------
 # 3. Kaggle에서 데이터 다운로드
